@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">WordSmallGuess</string>
+    <string name="app_name">词小猜</string>
+    <string name="start_game">开始游戏</string>
+    <string name="title_activity_select">SelectActivity</string>
 </resources>
