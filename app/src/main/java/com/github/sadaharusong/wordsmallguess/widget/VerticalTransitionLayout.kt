@@ -9,6 +9,11 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import com.github.sadaharusong.wordsmallguess.R
 
+/**
+ * @author sadaharusong
+ * @date 2019/4/27.
+ * GitHub：https://github.com/sadaharusong
+ */
 class VerticalTransitionLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : BaseTransitionLayout(context, attrs, defStyleAttr) {
 
     private var textView1: TextView? = null

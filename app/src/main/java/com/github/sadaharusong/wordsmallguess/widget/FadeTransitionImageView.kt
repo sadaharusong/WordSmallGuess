@@ -8,6 +8,11 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.github.sadaharusong.wordsmallguess.R
 
+/**
+ * @author sadaharusong
+ * @date 2019/4/27.
+ * GitHub：https://github.com/sadaharusong
+ */
 class FadeTransitionImageView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : BaseTransitionLayout(context, attrs, defStyleAttr) {
 
     private var imageView1: ImageView? = null

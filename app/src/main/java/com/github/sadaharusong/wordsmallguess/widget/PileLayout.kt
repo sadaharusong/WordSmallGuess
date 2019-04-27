@@ -1,14 +1,19 @@
 package com.github.sadaharusong.wordsmallguess.widget
 
-import android.widget.FrameLayout
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.util.AttributeSet
 import android.view.*
+import android.view.View.OnClickListener
 import android.view.animation.DecelerateInterpolator
+import android.widget.FrameLayout
 import com.github.sadaharusong.wordsmallguess.R
 
-
+/**
+ * @author sadaharusong
+ * @date 2019/4/27.
+ * GitHub：https://github.com/sadaharusong
+ */
 class PileLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : ViewGroup(context, attrs, defStyleAttr) {
 
     private val mMaximumVelocity: Int
@@ -22,7 +27,7 @@ class PileLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet
     private var everyWidth: Int = 0
     private var everyHeight: Int = 0
     private var scrollDistanceMax: Int = 0 // 滑动参考值
-    private val originX : ArrayList<Int>? = null // 存放的是最初的七个View的位置
+    private val originX : ArrayList<Int> = arrayListOf() // 存放的是最初的七个View的位置
     private var scrollMode: Int = 0
     private var downX: Int = 0
     private var downY: Int = 0
@@ -51,13 +56,11 @@ class PileLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet
         mTouchSlop = configuration.scaledTouchSlop
         mMaximumVelocity = configuration.scaledMaximumFlingVelocity
 
-        onClickListener = object : View.OnClickListener {
-            override fun onClick(v: View) {
-                if (null != adapter) {
-                    val position = Integer.parseInt(v.getTag().toString())
-                    if (position >= 0 && position < adapter!!.itemCount) {
-                        adapter!!.onItemClick((v as FrameLayout).getChildAt(0), position)
-                    }
+        onClickListener = OnClickListener { v ->
+            if (null != adapter) {
+                val position = Integer.parseInt(v.getTag().toString())
+                if (position >= 0 && position < adapter!!.itemCount) {
+                    adapter!!.onItemClick((v as FrameLayout).getChildAt(0), position)
                 }
             }
         }
@@ -71,8 +74,11 @@ class PileLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val width = getDefaultSize(suggestedMinimumWidth, widthMeasureSpec)
-        everyWidth = ((width - paddingLeft - paddingRight - interval * 8) / displayCount).toInt()
-        everyHeight = (everyWidth * sizeRatio).toInt()
+        //可以根据自己需求计算视图的高度，或者根据自己设计写固定值
+        //everyWidth = ((width - paddingLeft - paddingRight - interval * 8) / displayCount).toInt()
+        //everyHeight = (everyWidth * sizeRatio).toInt()
+        everyWidth = 400
+        everyHeight = 400
         setMeasuredDimension(width, (everyHeight * (1 + scaleStep) + paddingTop.toFloat() + paddingBottom.toFloat()).toInt())
 
         // 把每个View的初始位置坐标都计算好
@@ -130,20 +136,20 @@ class PileLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet
      * @param itemView 需要调整的imageView
      */
     private fun adjustAlpha(itemView: View) {
-        val position2 = originX!!.get(2)
-        if (itemView.getLeft() >= position2) {
+        val position2 = originX!![2]
+        if (itemView.left >= position2) {
             itemView.alpha = 1F
         } else {
-            val position0 = originX.get(0)
-            val alpha = itemView.getLeft() as Float / (position2 - position0)
-            itemView.setAlpha(alpha)
+            val position0 = originX[0]
+            val alpha = itemView.left.toFloat() / (position2 - position0)
+            itemView.alpha = alpha
         }
     }
 
     private fun adjustScale(itemView: View) {
         var scale = 1.0f
         val position4 = originX!!.get(4)
-        val thisLeft = itemView.getLeft()
+        val thisLeft = itemView.left
         if (thisLeft < position4) {
             val position3 = originX.get(3)
             if (thisLeft > position3) {
@@ -308,7 +314,7 @@ class PileLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
         // 2. 位置修正
         val view3 = getChildAt(3)
-        var rate = (view3.left + dx - originX!![3]) as Float / scrollDistanceMax
+        var rate = (view3.left + dx - originX!![3]).toFloat() / scrollDistanceMax
         if (rate < 0) {
             rate = 0f
         }

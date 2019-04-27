@@ -2,6 +2,11 @@ package com.github.sadaharusong.wordsmallguess.entity
 
 import org.json.JSONObject
 
+/**
+ * @author sadaharusong
+ * @date 2019/4/27.
+ * GitHub：https://github.com/sadaharusong
+ */
 class ItemEntity(jsonObject: JSONObject) {
 
     var country: String? = null

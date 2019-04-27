@@ -8,7 +8,7 @@
     android:orientation="vertical">
 
     <View
-        android:id="@+id/positionView"
+        android:id="@+id/position_view"
         android:layout_width="1dp"
         android:layout_height="1dp" />
 
@@ -19,7 +19,7 @@
         android:orientation="horizontal">
 
         <com.github.sadaharusong.wordsmallguess.widget.HorizontalTransitionLayout
-            android:id="@+id/countryView"
+            android:id="@+id/country_view"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -31,7 +31,7 @@
 
 
         <com.github.sadaharusong.wordsmallguess.widget.HorizontalTransitionLayout
-            android:id="@+id/temperatureView"
+            android:id="@+id/temperature_view"
             android:layout_width="90dp"
             android:layout_height="match_parent"
             scene:leftDistance="60dp"
@@ -52,8 +52,8 @@
 
     </LinearLayout>
 
-    <com.stone.pile.libs.PileLayout
-        android:id="@+id/pileLayout"
+    <com.github.sadaharusong.wordsmallguess.widget.PileLayout
+        android:id="@+id/pile_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="5dp"
@@ -76,7 +76,7 @@
             android:src="@mipmap/ic_launcher" />
 
         <com.github.sadaharusong.wordsmallguess.widget.VerticalTransitionLayout
-            android:id="@+id/addressView"
+            android:id="@+id/address_view"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginLeft="10dp"
@@ -87,7 +87,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/descriptionView"
+        android:id="@+id/description_view"
         android:layout_width="match_parent"
         android:layout_height="75dp"
         android:layout_marginLeft="35dp"
@@ -110,7 +110,7 @@
         android:layout_height="match_parent">
 
         <com.github.sadaharusong.wordsmallguess.widget.FadeTransitionImageView
-            android:id="@+id/bottomImageView"
+            android:id="@+id/bottom_iv"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
@@ -134,7 +134,7 @@
                 android:src="@mipmap/ic_launcher" />
 
             <com.github.sadaharusong.wordsmallguess.widget.VerticalTransitionLayout
-                android:id="@+id/timeView"
+                android:id="@+id/time_view"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginLeft="10dp"

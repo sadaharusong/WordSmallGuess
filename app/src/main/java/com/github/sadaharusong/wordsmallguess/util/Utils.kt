@@ -2,10 +2,14 @@ package com.github.sadaharusong.wordsmallguess.util
 
 import android.app.Activity
 import android.content.Context
-import android.support.annotation.IntegerRes
 import android.view.WindowManager
 import java.lang.reflect.Field
 
+/**
+ * @author sadaharusong
+ * @date 2019/4/27.
+ * GitHub：https://github.com/sadaharusong
+ */
 object Utils {
 
     /**

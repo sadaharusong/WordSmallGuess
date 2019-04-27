@@ -1,25 +1,28 @@
 package com.github.sadaharusong.wordsmallguess.activity
 
-import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
-import com.github.sadaharusong.wordsmallguess.R
-import com.github.sadaharusong.wordsmallguess.entity.ItemEntity
-import org.json.JSONObject
-import android.animation.ObjectAnimator
 import android.animation.Animator
+import android.animation.ObjectAnimator
 import android.os.Build
+import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
-import com.github.sadaharusong.wordsmallguess.widget.FadeTransitionImageView
-import com.github.sadaharusong.wordsmallguess.widget.VerticalTransitionLayout
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.github.sadaharusong.wordsmallguess.R
+import com.github.sadaharusong.wordsmallguess.entity.ItemEntity
 import com.github.sadaharusong.wordsmallguess.util.Utils
+import com.github.sadaharusong.wordsmallguess.widget.FadeTransitionImageView
 import com.github.sadaharusong.wordsmallguess.widget.HorizontalTransitionLayout
 import com.github.sadaharusong.wordsmallguess.widget.PileLayout
+import com.github.sadaharusong.wordsmallguess.widget.VerticalTransitionLayout
 
-
+/**
+ * @author sadaharusong
+ * @date 2019/4/27.
+ * GitHub：https://github.com/sadaharusong
+ */
 class SelectActivity : AppCompatActivity() {
 
     private var positionView: View? = null
@@ -40,16 +43,16 @@ class SelectActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_select)
 
-        positionView = findViewById<View>(R.id.positionView)
-        countryView = findViewById<View>(R.id.countryView) as HorizontalTransitionLayout?
-        temperatureView = findViewById<View>(R.id.temperatureView) as HorizontalTransitionLayout
-        pileLayout = findViewById<View>(R.id.pileLayout) as PileLayout
-        addressView = findViewById<View>(R.id.addressView) as VerticalTransitionLayout?
-        descriptionView = findViewById<View>(R.id.descriptionView) as TextView?
-        timeView = findViewById<View>(R.id.timeView) as VerticalTransitionLayout
-        bottomView = findViewById<View>(R.id.bottomImageView) as FadeTransitionImageView?
+        positionView = findViewById(R.id.position_view)
+        countryView = findViewById<View>(R.id.country_view) as HorizontalTransitionLayout?
+        temperatureView = findViewById<View>(R.id.temperature_view) as HorizontalTransitionLayout?
+        pileLayout = findViewById<View>(R.id.pile_layout) as PileLayout?
+        addressView = findViewById<View>(R.id.address_view) as VerticalTransitionLayout?
+        descriptionView = findViewById<View>(R.id.description_view) as TextView?
+        timeView = findViewById<View>(R.id.time_view) as VerticalTransitionLayout?
+        bottomView = findViewById<View>(R.id.bottom_iv) as FadeTransitionImageView?
 
         // 1. 状态栏侵入
         var adjustStatusHeight = false
@@ -107,21 +110,21 @@ class SelectActivity : AppCompatActivity() {
                 get() = R.layout.item_layout
 
             override val itemCount: Int
-                get() = dataList!!.size
+                get() = 50
 
             override fun bindView(view: View, position: Int) {
                 var viewHolder: ViewHolder? = view.tag as ViewHolder?
                 if (viewHolder == null) {
                     viewHolder = ViewHolder()
                     viewHolder.imageView = view.findViewById(R.id.imageView) as ImageView
-                    view.setTag(viewHolder)
+                    view.tag = viewHolder
                 }
 
-                Glide.with(this@SelectActivity).load(dataList!![position].coverImageUrl).into(viewHolder.imageView!!)
+                Glide.with(this@SelectActivity).load(getDrawable(R.mipmap.ic_launcher)).into(viewHolder.imageView!!)
             }
 
             override fun displaying(position: Int) {
-                descriptionView!!.text = dataList!![position].description + " Since the world is so beautiful, You have to believe me, and this index is " + position
+                descriptionView!!.text = " Since the world is so beautiful, You have to believe me, and this index is " + position
                 if (lastDisplay < 0) {
                     initSecene(position)
                     lastDisplay = 0
@@ -135,11 +138,11 @@ class SelectActivity : AppCompatActivity() {
     }
 
     private fun initSecene(position: Int) {
-        countryView!!.firstInit(dataList!![position].country!!)
-        temperatureView!!.firstInit(dataList!![position].temperature!!)
-        addressView!!.firstInit(dataList!![position].address!!)
-        bottomView!!.firstInit(dataList!![position].mapImageUrl!!)
-        timeView!!.firstInit(dataList!![position].time!!)
+        countryView!!.firstInit("firstInit countryView")
+        temperatureView!!.firstInit("firstInit temperatureView")
+        addressView!!.firstInit("firstInit addressView")
+        bottomView!!.firstInit("firstInit bottomView")
+        timeView!!.firstInit("firstInit timeView")
     }
 
     private fun transitionSecene(position: Int) {
@@ -147,11 +150,11 @@ class SelectActivity : AppCompatActivity() {
             transitionAnimator!!.cancel()
         }
 
-        countryView!!.saveNextPosition(position, dataList!![position].country + "-" + position)
-        temperatureView!!.saveNextPosition(position, dataList!![position].temperature!!)
-        addressView!!.saveNextPosition(position, dataList!![position].address!!)
-        bottomView!!.saveNextPosition(position, dataList!![position].mapImageUrl!!)
-        timeView!!.saveNextPosition(position, dataList!![position].time!!)
+        countryView!!.saveNextPosition(position, "country")
+        temperatureView!!.saveNextPosition(position, ":temperature")
+        addressView!!.saveNextPosition(position, "address")
+        bottomView!!.saveNextPosition(position, "mapImageUrl")
+        timeView!!.saveNextPosition(position, "time")
 
         transitionAnimator = ObjectAnimator.ofFloat(this, "transitionValue", 0.0f, 1.0f)
         transitionAnimator!!.duration = 300
@@ -165,7 +168,7 @@ class SelectActivity : AppCompatActivity() {
      */
     private fun adjustStatusBarHeight() {
         val statusBarHeight = Utils.getStatusBarHeight(this)
-        val lp = positionView!!.getLayoutParams()
+        val lp = positionView!!.layoutParams
         lp.height = statusBarHeight
         positionView!!.setLayoutParams(lp)
     }
@@ -176,7 +179,7 @@ class SelectActivity : AppCompatActivity() {
      */
     private fun initDataList() {
         dataList = ArrayList()
-        try {
+        /*try {
             val `in` = assets.open("preset.config")
             val size = `in`.available()
             val buffer = ByteArray(size)
@@ -197,7 +200,7 @@ class SelectActivity : AppCompatActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
+*/
     }
 
     /**

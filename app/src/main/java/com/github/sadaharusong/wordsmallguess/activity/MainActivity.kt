@@ -5,6 +5,11 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.TextView
 import com.github.sadaharusong.wordsmallguess.R
 
+/**
+ * @author sadaharusong
+ * @date 2019/4/27.
+ * GitHub：https://github.com/sadaharusong
+ */
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
