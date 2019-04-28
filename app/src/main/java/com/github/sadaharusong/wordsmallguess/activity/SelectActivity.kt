@@ -17,6 +17,7 @@ import com.github.sadaharusong.wordsmallguess.widget.FadeTransitionImageView
 import com.github.sadaharusong.wordsmallguess.widget.HorizontalTransitionLayout
 import com.github.sadaharusong.wordsmallguess.widget.PileLayout
 import com.github.sadaharusong.wordsmallguess.widget.VerticalTransitionLayout
+import org.json.JSONObject
 
 /**
  * @author sadaharusong
@@ -33,10 +34,10 @@ class SelectActivity : AppCompatActivity() {
 
     private var transitionAnimator: ObjectAnimator? = null
     private var transitionValue: Float = 0.toFloat()
-    private var countryView: HorizontalTransitionLayout? = null
-    private var temperatureView:HorizontalTransitionLayout? = null
-    private var addressView: VerticalTransitionLayout? = null
-    private var timeView:VerticalTransitionLayout? = null
+    private var titleView: HorizontalTransitionLayout? = null
+    private var typeView:HorizontalTransitionLayout? = null
+    private var subTitleView: VerticalTransitionLayout? = null
+    private var authorView:VerticalTransitionLayout? = null
     private var bottomView: FadeTransitionImageView? = null
     private var animatorListener: Animator.AnimatorListener? = null
     private var descriptionView: TextView? = null
@@ -46,12 +47,12 @@ class SelectActivity : AppCompatActivity() {
         setContentView(R.layout.activity_select)
 
         positionView = findViewById(R.id.position_view)
-        countryView = findViewById<View>(R.id.country_view) as HorizontalTransitionLayout?
-        temperatureView = findViewById<View>(R.id.temperature_view) as HorizontalTransitionLayout?
+        titleView = findViewById<View>(R.id.country_view) as HorizontalTransitionLayout?
+        typeView = findViewById<View>(R.id.temperature_view) as HorizontalTransitionLayout?
         pileLayout = findViewById<View>(R.id.pile_layout) as PileLayout?
-        addressView = findViewById<View>(R.id.address_view) as VerticalTransitionLayout?
+        subTitleView = findViewById<View>(R.id.address_view) as VerticalTransitionLayout?
         descriptionView = findViewById<View>(R.id.description_view) as TextView?
-        timeView = findViewById<View>(R.id.time_view) as VerticalTransitionLayout?
+        authorView = findViewById<View>(R.id.time_view) as VerticalTransitionLayout?
         bottomView = findViewById<View>(R.id.bottom_iv) as FadeTransitionImageView?
 
         // 1. 状态栏侵入
@@ -86,11 +87,11 @@ class SelectActivity : AppCompatActivity() {
             }
 
             override fun onAnimationEnd(animation: Animator) {
-                countryView!!.onAnimationEnd()
-                temperatureView!!.onAnimationEnd()
-                addressView!!.onAnimationEnd()
+                titleView!!.onAnimationEnd()
+                typeView!!.onAnimationEnd()
+                subTitleView!!.onAnimationEnd()
                 bottomView!!.onAnimationEnd()
-                timeView!!.onAnimationEnd()
+                authorView!!.onAnimationEnd()
             }
 
             override fun onAnimationCancel(animation: Animator) {
@@ -110,7 +111,7 @@ class SelectActivity : AppCompatActivity() {
                 get() = R.layout.item_layout
 
             override val itemCount: Int
-                get() = 50
+                get() = dataList!!.size
 
             override fun bindView(view: View, position: Int) {
                 var viewHolder: ViewHolder? = view.tag as ViewHolder?
@@ -120,11 +121,12 @@ class SelectActivity : AppCompatActivity() {
                     view.tag = viewHolder
                 }
 
-                Glide.with(this@SelectActivity).load(getDrawable(R.mipmap.ic_launcher)).into(viewHolder.imageView!!)
+                Glide.with(this@SelectActivity).load(dataList!![position]!!.iconUrl).
+                        placeholder(R.mipmap.ic_launcher).into(viewHolder.imageView!!)
             }
 
             override fun displaying(position: Int) {
-                descriptionView!!.text = " Since the world is so beautiful, You have to believe me, and this index is " + position
+                descriptionView!!.text = dataList!![position].description
                 if (lastDisplay < 0) {
                     initSecene(position)
                     lastDisplay = 0
@@ -138,11 +140,11 @@ class SelectActivity : AppCompatActivity() {
     }
 
     private fun initSecene(position: Int) {
-        countryView!!.firstInit("firstInit countryView")
-        temperatureView!!.firstInit("firstInit temperatureView")
-        addressView!!.firstInit("firstInit addressView")
+        titleView!!.firstInit(dataList!![position].title!!)
+        typeView!!.firstInit(dataList!![position].type!!)
+        subTitleView!!.firstInit(dataList!![position].subTitle!!)
         bottomView!!.firstInit("firstInit bottomView")
-        timeView!!.firstInit("firstInit timeView")
+        authorView!!.firstInit(dataList!![position].author!!)
     }
 
     private fun transitionSecene(position: Int) {
@@ -150,11 +152,11 @@ class SelectActivity : AppCompatActivity() {
             transitionAnimator!!.cancel()
         }
 
-        countryView!!.saveNextPosition(position, "country")
-        temperatureView!!.saveNextPosition(position, ":temperature")
-        addressView!!.saveNextPosition(position, "address")
+        titleView!!.saveNextPosition(position, dataList!![position].title!!)
+        typeView!!.saveNextPosition(position, dataList!![position].type!!)
+        subTitleView!!.saveNextPosition(position, dataList!![position].subTitle!!)
         bottomView!!.saveNextPosition(position, "mapImageUrl")
-        timeView!!.saveNextPosition(position, "time")
+        authorView!!.saveNextPosition(position, dataList!![position].author!!)
 
         transitionAnimator = ObjectAnimator.ofFloat(this, "transitionValue", 0.0f, 1.0f)
         transitionAnimator!!.duration = 300
@@ -179,28 +181,25 @@ class SelectActivity : AppCompatActivity() {
      */
     private fun initDataList() {
         dataList = ArrayList()
-        /*try {
-            val `in` = assets.open("preset.config")
-            val size = `in`.available()
+        try {
+            val inputStream = assets.open("preset.config")
+            val size = inputStream.available()
             val buffer = ByteArray(size)
-            `in`.read(buffer)
+            inputStream.read(buffer)
             val jsonStr = String(buffer)
             val jsonObject = JSONObject(jsonStr)
             val jsonArray = jsonObject.optJSONArray("result")
             if (null != jsonArray) {
                 val len = jsonArray.length()
-                for (j in 0..2) {
-                    for (i in 0 until len) {
-                        val itemJsonObject = jsonArray.getJSONObject(i)
-                        val itemEntity = ItemEntity(itemJsonObject)
-                        dataList!!.add(itemEntity)
-                    }
+                for (i in 0 until len) {
+                    val itemJsonObject = jsonArray.getJSONObject(i)
+                    val itemEntity = ItemEntity(itemJsonObject)
+                    dataList!!.add(itemEntity)
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
-*/
     }
 
     /**
@@ -208,11 +207,11 @@ class SelectActivity : AppCompatActivity() {
      */
     fun setTransitionValue(transitionValue: Float) {
         this.transitionValue = transitionValue
-        countryView!!.duringAnimation(transitionValue)
-        temperatureView!!.duringAnimation(transitionValue)
-        addressView!!.duringAnimation(transitionValue)
+        titleView!!.duringAnimation(transitionValue)
+        typeView!!.duringAnimation(transitionValue)
+        subTitleView!!.duringAnimation(transitionValue)
         bottomView!!.duringAnimation(transitionValue)
-        timeView!!.duringAnimation(transitionValue)
+        authorView!!.duringAnimation(transitionValue)
     }
 
     fun getTransitionValue(): Float {
