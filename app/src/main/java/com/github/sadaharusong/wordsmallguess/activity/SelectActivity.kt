@@ -2,8 +2,11 @@ package com.github.sadaharusong.wordsmallguess.activity
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.WindowManager
@@ -12,12 +15,12 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.github.sadaharusong.wordsmallguess.R
 import com.github.sadaharusong.wordsmallguess.entity.ItemEntity
+import com.github.sadaharusong.wordsmallguess.util.DataUtils
 import com.github.sadaharusong.wordsmallguess.util.Utils
 import com.github.sadaharusong.wordsmallguess.widget.FadeTransitionImageView
 import com.github.sadaharusong.wordsmallguess.widget.HorizontalTransitionLayout
 import com.github.sadaharusong.wordsmallguess.widget.PileLayout
 import com.github.sadaharusong.wordsmallguess.widget.VerticalTransitionLayout
-import org.json.JSONObject
 
 /**
  * @author sadaharusong
@@ -42,10 +45,13 @@ class SelectActivity : AppCompatActivity() {
     private var animatorListener: Animator.AnimatorListener? = null
     private var descriptionView: TextView? = null
 
+    private var mContext: Context? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select)
 
+        mContext = this
         positionView = findViewById(R.id.position_view)
         titleView = findViewById<View>(R.id.country_view) as HorizontalTransitionLayout?
         typeView = findViewById<View>(R.id.temperature_view) as HorizontalTransitionLayout?
@@ -105,7 +111,7 @@ class SelectActivity : AppCompatActivity() {
 
 
         // 3. PileLayout绑定Adapter
-        initDataList()
+        dataList = DataUtils.getTypeList(mContext as SelectActivity)
         pileLayout!!.setAdapter(object : PileLayout.Adapter() {
             override val layoutId: Int
                 get() = R.layout.item_layout
@@ -128,7 +134,7 @@ class SelectActivity : AppCompatActivity() {
             override fun displaying(position: Int) {
                 descriptionView!!.text = dataList!![position].description
                 if (lastDisplay < 0) {
-                    initSecene(position)
+                    initView(position)
                     lastDisplay = 0
                 } else if (lastDisplay != position) {
                     transitionSecene(position)
@@ -136,10 +142,26 @@ class SelectActivity : AppCompatActivity() {
                 }
             }
 
+            override fun onItemClick(view: View, position: Int) {
+                var type = dataList!![position].type
+                var title = dataList!![position].title
+                var list= DataUtils.getDataList(mContext as SelectActivity, type!!, title!!)
+                AlertDialog.Builder(mContext as SelectActivity)
+                        .setTitle("设置时间")
+                        .setMessage("暂时只能选择五分钟吧")
+                        .setPositiveButton("开始") { dialog, which ->
+                            var intent = Intent()
+                            intent.putStringArrayListExtra("gameList", list)
+                            intent.putExtra("gameTime", 5000)
+                            startActivity(intent.setClass(mContext, GameActivity::class.java)) }
+                        .setNegativeButton("取消",{dialog, which ->  })
+                        .show()
+            }
+
         })
     }
 
-    private fun initSecene(position: Int) {
+    private fun initView(position: Int) {
         titleView!!.firstInit(dataList!![position].title!!)
         typeView!!.firstInit(dataList!![position].type!!)
         subTitleView!!.firstInit(dataList!![position].subTitle!!)
@@ -173,33 +195,6 @@ class SelectActivity : AppCompatActivity() {
         val lp = positionView!!.layoutParams
         lp.height = statusBarHeight
         positionView!!.setLayoutParams(lp)
-    }
-
-
-    /**
-     * 从asset读取文件json数据
-     */
-    private fun initDataList() {
-        dataList = ArrayList()
-        try {
-            val inputStream = assets.open("preset.config")
-            val size = inputStream.available()
-            val buffer = ByteArray(size)
-            inputStream.read(buffer)
-            val jsonStr = String(buffer)
-            val jsonObject = JSONObject(jsonStr)
-            val jsonArray = jsonObject.optJSONArray("result")
-            if (null != jsonArray) {
-                val len = jsonArray.length()
-                for (i in 0 until len) {
-                    val itemJsonObject = jsonArray.getJSONObject(i)
-                    val itemEntity = ItemEntity(itemJsonObject)
-                    dataList!!.add(itemEntity)
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
     }
 
     /**
