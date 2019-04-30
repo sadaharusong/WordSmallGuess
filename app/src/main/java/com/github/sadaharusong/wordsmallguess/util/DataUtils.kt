@@ -60,7 +60,8 @@ object DataUtils {
                     val wordsEntity = WordsEntity(itemJsonObject)
                     if (wordsEntity.category.equals(title)){
                         // todo some bug
-                        dataList!!.add(wordsEntity.allWords!!)
+                        var array =  com.alibaba.fastjson.JSONObject.parseArray(wordsEntity.allWords).toArray()
+                        dataList = array.toList() as ArrayList<String>
                     }
                 }
             }

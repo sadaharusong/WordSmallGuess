@@ -9,8 +9,10 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="1dp"
         android:scaleType="centerCrop"
         android:src="@mipmap/ic_launcher"
+        android:background="@drawable/default_back"
          />
 
 </FrameLayout>

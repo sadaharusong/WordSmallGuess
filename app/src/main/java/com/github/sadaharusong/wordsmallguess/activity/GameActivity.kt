@@ -30,6 +30,7 @@ class GameActivity : AppCompatActivity() {
 
     private var mWordView: TextView? = null
     private var mSizeView: TextView? = null
+    private var mTimeView: TextView? = null
     private var mCloseView: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,12 +38,12 @@ class GameActivity : AppCompatActivity() {
         setContentView(R.layout.game_activity)
         mTimeHandler = TimeHandler()
 
-        initdata()
+        initData()
         initView()
         resetGame()
     }
 
-    private fun initdata() {
+    private fun initData() {
         mGameList = intent.getStringArrayListExtra("gameList")
         mGameTime = intent.getIntExtra("gameTime", 0)
 
@@ -51,6 +52,7 @@ class GameActivity : AppCompatActivity() {
     private fun initView() {
         mWordView = findViewById<View>(R.id.word_view) as TextView
         mSizeView = findViewById<View>(R.id.size_view) as TextView
+        mTimeView = findViewById<View>(R.id.author_view) as TextView
         mCloseView = findViewById<View>(R.id.close_view) as ImageView
 
         mCloseView!!.setOnClickListener { v -> mTimeHandler!!.sendEmptyMessage(MSG_PAUSE) }
@@ -62,7 +64,7 @@ class GameActivity : AppCompatActivity() {
                 .setMessage("暂停啦！")
                 .setPositiveButton("退出") { dialog, which -> finish() }
                 .setNegativeButton("继续") { dialog, which ->
-
+                    mTimeHandler!!.sendEmptyMessage(MSG_START)
                 }.create().show()
     }
 
@@ -70,8 +72,10 @@ class GameActivity : AppCompatActivity() {
         AlertDialog.Builder(this)
                 .setTitle("游戏结束")
                 .setMessage("答对啦 : " + mCorrectCount + "题\n" + "答错啦 : " + mErrorCount + "题")
-                .setPositiveButton("退出", { dialog, which -> finish() })
-                .setNegativeButton("继续", { dialog, which -> }).create().show()
+                .setPositiveButton("退出") { dialog, which -> finish() }
+                .setNegativeButton("继续") { dialog, which ->
+                    resetGame()
+                }.create().show()
     }
 
     private fun resetGame() {
@@ -80,13 +84,20 @@ class GameActivity : AppCompatActivity() {
         changeWord()
     }
 
+    private fun changeTime() {
+        var min = mTotalTime / 60 % 60
+        var sec = mTotalTime % 60
+        var time:String = min.toString() + ":" + sec
+        mTimeView!!.text = time
+    }
+
     private fun changeWord() {
         if (mGameList.size > 0) {
             val l = System.currentTimeMillis()
             val index = (l % mGameList.size).toInt()
             mWordView!!.text = mGameList[index]
             mGameList.removeAt(index)
-            mSizeView!!.text = mGameList.size.toString()
+            mSizeView!!.text = "词库剩余 : " + mGameList.size.toString()
         } else {
             mTimeHandler!!.sendEmptyMessage(MSG_STOP)
         }
@@ -98,16 +109,17 @@ class GameActivity : AppCompatActivity() {
             if (msg.what == MSG_START) {
                 mTotalTime--
                 if (mTotalTime > 0) {
+                    changeTime()
                     mTimeHandler!!.sendEmptyMessageDelayed(MSG_START, 1000)
                 } else {
                     mTimeHandler!!.sendEmptyMessage(MSG_STOP)
                     mTimeHandler!!.removeMessages(MSG_START)
                 }
             } else if (msg.what == MSG_PAUSE) {
-                mTimeHandler!!.removeMessages(0)
+                mTimeHandler!!.removeMessages(MSG_START)
                 showPauseDialog()
             } else if (msg.what == MSG_STOP) {
-                mTimeHandler!!.removeMessages(0)
+                mTimeHandler!!.removeMessages(MSG_START)
                 showEndDialog()
             }
         }

@@ -53,12 +53,12 @@ class SelectActivity : AppCompatActivity() {
 
         mContext = this
         positionView = findViewById(R.id.position_view)
-        titleView = findViewById<View>(R.id.country_view) as HorizontalTransitionLayout?
-        typeView = findViewById<View>(R.id.temperature_view) as HorizontalTransitionLayout?
-        pileLayout = findViewById<View>(R.id.pile_layout) as PileLayout?
-        subTitleView = findViewById<View>(R.id.address_view) as VerticalTransitionLayout?
+        titleView = findViewById<View>(R.id.title_view) as HorizontalTransitionLayout?
+        typeView = findViewById<View>(R.id.type_view) as HorizontalTransitionLayout?
+        pileLayout = findViewById<View>(R.id.select_layout) as PileLayout?
+        subTitleView = findViewById<View>(R.id.subtitle_view) as VerticalTransitionLayout?
         descriptionView = findViewById<View>(R.id.description_view) as TextView?
-        authorView = findViewById<View>(R.id.time_view) as VerticalTransitionLayout?
+        authorView = findViewById<View>(R.id.author_view) as VerticalTransitionLayout?
         bottomView = findViewById<View>(R.id.bottom_iv) as FadeTransitionImageView?
 
         // 1. 状态栏侵入
@@ -128,7 +128,7 @@ class SelectActivity : AppCompatActivity() {
                 }
 
                 Glide.with(this@SelectActivity).load(dataList!![position]!!.iconUrl).
-                        placeholder(R.mipmap.ic_launcher).into(viewHolder.imageView!!)
+                        placeholder(R.drawable.default_icon).into(viewHolder.imageView!!)
             }
 
             override fun displaying(position: Int) {
@@ -152,7 +152,7 @@ class SelectActivity : AppCompatActivity() {
                         .setPositiveButton("开始") { dialog, which ->
                             var intent = Intent()
                             intent.putStringArrayListExtra("gameList", list)
-                            intent.putExtra("gameTime", 5000)
+                            intent.putExtra("gameTime", 300)
                             startActivity(intent.setClass(mContext, GameActivity::class.java)) }
                         .setNegativeButton("取消",{dialog, which ->  })
                         .show()
